@@ -6,6 +6,7 @@ import {
 
 import { presetManager } from '../presets';
 import { t } from '../core/localizer';
+import { sendActivity } from '../activities/actvity_server';
 import { actionAddMidpoint } from '../actions/add_midpoint';
 import { actionMoveNode } from '../actions/move_node';
 import { actionNoop } from '../actions/noop';
@@ -44,6 +45,8 @@ export function behaviorDrawWay(context, wayID, mode, startGraph) {
         // don't make the draw node until we actually need it
         _drawNode = osmNode({ loc: loc });
 
+        sendActivity("addNode", loc);
+
         context.pauseChangeDispatch();
         context.replace(function actionAddDrawNode(graph) {
             // add the draw node to the graph and insert it into the way
@@ -58,6 +61,7 @@ export function behaviorDrawWay(context, wayID, mode, startGraph) {
     }
 
     function removeDrawNode() {
+        sendActivity("removeNode", loc);
 
         context.pauseChangeDispatch();
         context.replace(
@@ -336,7 +340,6 @@ export function behaviorDrawWay(context, wayID, mode, startGraph) {
 
 
     function attemptAdd(d, loc, doAdd) {
-
         if (_drawNode) {
             // move the node to the final loc in case move wasn't called
             // consistently (e.g. on touch devices)
