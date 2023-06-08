@@ -25,6 +25,7 @@ import {
 import { modeBrowse } from './browse';
 import { modeSelect } from './select';
 import { osmJoinWays, osmNode } from '../osm';
+import { sendActivity } from '../activities';
 import { utilArrayIntersection, utilKeybinding } from '../util';
 
 
@@ -424,6 +425,8 @@ export function modeDragNode(context) {
                 context.enter(modeBrowse(context));
             }
         }
+
+        sendActivity('moveNodes', { 'nodes': [entity.id], 'point': entity.loc });
     }
 
 

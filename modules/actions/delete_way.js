@@ -1,5 +1,6 @@
-import { osmNodeGeometriesForTags } from '../osm/tags';
-import { actionDeleteRelation } from './delete_relation';
+import {osmNodeGeometriesForTags} from '../osm/tags';
+import {actionDeleteRelation} from './delete_relation';
+import {sendActivity} from '../activities';
 
 
 // https://github.com/openstreetmap/potlatch2/blob/master/net/systemeD/halcyon/connection/actions/DeleteWayAction.as
@@ -21,31 +22,29 @@ export function actionDeleteWay(wayID) {
         return !node.hasInterestingTags();
     }
 
-
-    var action = function(graph) {
+    return function (graph) {
         var way = graph.entity(wayID);
 
-        graph.parentRelations(way).forEach(function(parent) {
-            parent = parent.removeMembersWithID(wayID);
-            graph = graph.replace(parent);
+        graph.parentRelations(way).forEach(function (parent) {
+          parent = parent.removeMembersWithID(wayID);
+          graph = graph.replace(parent);
 
-            if (parent.isDegenerate()) {
-                graph = actionDeleteRelation(parent.id)(graph);
-            }
+          if (parent.isDegenerate()) {
+            graph = actionDeleteRelation(parent.id)(graph);
+          }
         });
 
-        (new Set(way.nodes)).forEach(function(nodeID) {
-            graph = graph.replace(way.removeNode(nodeID));
+        (new Set(way.nodes)).forEach(function (nodeID) {
+          graph = graph.replace(way.removeNode(nodeID));
 
-            var node = graph.entity(nodeID);
-            if (canDeleteNode(node, graph)) {
-                graph = graph.remove(node);
-            }
+          var node = graph.entity(nodeID);
+          if (canDeleteNode(node, graph)) {
+            graph = graph.remove(node);
+          }
         });
 
-        return graph.remove(way);
+        var action = graph.remove(way);
+        sendActivity('removeNode', { 'nodes': way.nodes, 'wayID': way.id });
+        return action;
     };
-
-
-    return action;
 }

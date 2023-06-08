@@ -1,5 +1,6 @@
 import { actionDeleteRelation } from './delete_relation';
 import { actionDeleteWay } from './delete_way';
+import { sendActivity } from '../activities';
 
 
 // https://github.com/openstreetmap/potlatch2/blob/master/net/systemeD/halcyon/connection/actions/DeleteNodeAction.as
@@ -26,6 +27,8 @@ export function actionDeleteNode(nodeId) {
                     graph = actionDeleteRelation(parent.id)(graph);
                 }
             });
+
+        sendActivity('removeNodes', { 'nodes': [nodeId] });
 
         return graph.remove(node);
     };

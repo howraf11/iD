@@ -6,7 +6,7 @@ import {
 
 import { presetManager } from '../presets';
 import { t } from '../core/localizer';
-import { sendActivity } from '../activities/actvity_server';
+import { sendActivity } from '../activities';
 import { actionAddMidpoint } from '../actions/add_midpoint';
 import { actionMoveNode } from '../actions/move_node';
 import { actionNoop } from '../actions/noop';
@@ -45,7 +45,7 @@ export function behaviorDrawWay(context, wayID, mode, startGraph) {
         // don't make the draw node until we actually need it
         _drawNode = osmNode({ loc: loc });
 
-        sendActivity("addNode", loc);
+        sendActivity('addNode', { 'point': loc, 'wayID': wayID, 'nodes': [_drawNode.id] });
 
         context.pauseChangeDispatch();
         context.replace(function actionAddDrawNode(graph) {
@@ -61,7 +61,7 @@ export function behaviorDrawWay(context, wayID, mode, startGraph) {
     }
 
     function removeDrawNode() {
-        sendActivity("removeNode", loc);
+        sendActivity('removeNode', { 'point': _drawNode.loc, 'wayID': wayID });
 
         context.pauseChangeDispatch();
         context.replace(
@@ -521,6 +521,7 @@ export function behaviorDrawWay(context, wayID, mode, startGraph) {
             return;   // can't click here
         }
 
+        sendActivity('complete', { 'wayID': wayID });
         context.pauseChangeDispatch();
         // remove the temporary edit
         context.pop(1);

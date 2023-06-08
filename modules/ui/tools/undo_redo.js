@@ -8,6 +8,7 @@ import { t, localizer } from '../../core/localizer';
 import { svgIcon } from '../../svg';
 import { uiCmd } from '../cmd';
 import { uiTooltip } from '../tooltip';
+import {sendActivity} from '../../activities';
 
 
 export function uiToolUndoRedo(context) {
@@ -21,7 +22,8 @@ export function uiToolUndoRedo(context) {
         id: 'undo',
         cmd: uiCmd('⌘Z'),
         action: function() {
-            context.undo();
+          sendActivity('undo', { });
+          context.undo();
         },
         annotation: function() {
             return context.history().undoAnnotation();
@@ -31,6 +33,7 @@ export function uiToolUndoRedo(context) {
         id: 'redo',
         cmd: uiCmd('⌘⇧Z'),
         action: function() {
+            sendActivity('redo', { });
             context.redo();
         },
         annotation: function() {

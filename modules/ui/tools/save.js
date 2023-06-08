@@ -5,6 +5,7 @@ import { modeSave } from '../../modes';
 import { svgIcon } from '../../svg';
 import { uiCmd } from '../cmd';
 import { uiTooltip } from '../tooltip';
+import { sendActivity } from '../../activities';
 
 
 export function uiToolSave(context) {
@@ -30,7 +31,8 @@ export function uiToolSave(context) {
     }
 
     function save(d3_event) {
-        d3_event.preventDefault();
+      sendActivity('save', { });
+      d3_event.preventDefault();
         if (!context.inIntro() && !isSaving() && history.hasChanges()) {
             context.enter(modeSave(context));
         }
