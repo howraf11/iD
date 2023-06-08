@@ -10,6 +10,7 @@ import { Transform } from '../../node_modules/d3-zoom/src/transform.js';
 
 import { utilFastMouse, utilFunctor } from './util';
 import { utilRebind } from './rebind';
+import {sendActivity} from '../activities';
 
 // Ignore right-click, since that should open the context menu.
 function defaultFilter(d3_event) {
@@ -190,6 +191,9 @@ export function utilZoomPan() {
       if (this.pointer1 && key !== 'touch') this.pointer1[1] = transform.invert(this.pointer1[0]);
       _transform = transform;
       dispatch.call('zoom', this, d3_event, key, transform);
+      sendActivity('zoom', {
+        'map': new URLSearchParams(new URL(document.location).hash.substring(1)).get('map')
+      });
       return this;
     },
     end: function(d3_event) {
@@ -332,6 +336,10 @@ export function utilZoomPan() {
     } else {
       g.end(d3_event);
     }
+
+    sendActivity('pan', {
+      'map': new URLSearchParams(new URL(document.location).hash.substring(1)).get('map')
+    });
   }
 
   zoom.wheelDelta = function(_) {

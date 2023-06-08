@@ -22,6 +22,10 @@ export async function sendActivity(action, activity) {
           value.nodes = activity.nodes;
         }
 
+      if (activity.map) {
+        value.mapLocation = activity.map;
+      }
+
         await d3_json(POST_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
